@@ -63,7 +63,7 @@ public class HomeController {
 
 	@ResponseBody
 	@RequestMapping(value = "/openData2.do", produces = "application/json;charset=UTF-8")
-	public String openData2() throws IOException, ParseException {
+	public ArrayList<DataVO> openData2() throws IOException, ParseException {
 
 		// 인증키 준비
 		final String serviceKey = "v6YzJBWl9w5x%2FRwvHr%2FGB6LWvnHoiDkudhbAlfa%2Fhc%2FM7k7XZB3mj27bdzVkQuETwbVqz%2B0DoJ3JjyAwhHzqgw%3D%3D";
@@ -128,13 +128,13 @@ public class HomeController {
 		}
 
 		// json문자열 타입으로 처리된 응답 데이터
-		return responseStr;
+		return list;
 	}
 
 	
 	@ResponseBody
 	@RequestMapping(value="/openData3.do",produces="application/json;charset=UTF-8")
-	public String openData3() throws IOException {
+	public ArrayList<DataVO> openData3() throws IOException, ParseException {
 		// 버튼을 누르면 미세먼지 api 요청후 응답 데이터를 받아
 		// 해당 데이터를 각 속성명에 해당하는 테이블을 구성하여
 		// tr로 추가해보기
@@ -168,8 +168,38 @@ public class HomeController {
 		// 스트림 연결되었으니 한줄 읽기 및 담아주기
 		String responseStr = br.readLine();
 		
-		
-		return responseStr;
+		// 응답 데이터 문자열을 JSON 화 시키기 (파싱)
+		JSONObject totalObj = (JSONObject) new JSONParser().parse(responseStr);
+		System.out.println(totalObj);
+		JSONObject response = (JSONObject) totalObj.get("response");
+		System.out.println(response);
+		JSONObject body = (JSONObject) response.get("body");
+		System.out.println(body);
+		JSONArray items = (JSONArray) body.get("items");
+		System.out.println(items);
+		// items 속성에 접근하여 객체배열을 얻어냈으니 해당 객체배열에서
+		// 데이터를 접근하여 VO에 담아주기
+		// 우리가 정의한 VO에 각 데이터 담아서 ArrayList에 추가 후 list 출력해보기
+		ArrayList<DataVO> list = new ArrayList<>();
+
+		for (Object jobj : items) {
+			// 다운캐스팅 처리해놓기
+			JSONObject jo = (JSONObject) jobj;
+
+			list.add(DataVO.builder().clearVal((String) jo.get("clearVal")).sn((String) jo.get("sn"))
+					.districtName((String) jo.get("districtName")).dataDate((String) jo.get("dataDate"))
+					.issueVal((String) jo.get("issueVal")).issueTime((String) jo.get("issueTime"))
+					.clearDate((String) jo.get("clearDate")).issueDate((String) jo.get("issueDate"))
+					.moveName((String) jo.get("moveName")).clearTime((String) jo.get("clearTime"))
+					.issueGbn((String) jo.get("issueGbn")).itemCode((String) jo.get("itemCode")).build());
+		}
+
+		for (DataVO dv : list) {
+			System.out.println(dv);
+		}
+
+		// json문자열 타입으로 처리된 응답 데이터
+		return list;
 	}
 
 }
