@@ -1,0 +1,7 @@
+# Maven 및 빌드 아티팩트
+target/
+# Git의 추적 목록에서 target/ 디렉토리 전체를 제거
+git rm -r --cached target/
+git add .gitignore
+git commit -m "빌드 아티팩트(target/) 추적 중지"
+git push
