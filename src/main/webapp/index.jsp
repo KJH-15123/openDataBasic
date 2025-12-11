@@ -47,42 +47,47 @@
 			});
 		});
 		
-		$("#btn3").click(function(){
+		document.addEventListener('DOMContentLoaded',function(){
+			const btn3 = document.querySelector("#btn3");
+			const tableBody = document.querySelector("table tbody");
+			
+			btn3.addEventListener('click',async function(){
+				try{
+					const response = await fetch('openData3.do',{})
 					
-			$.ajax({
-				url : "openData3.do",
-				success : function(data){
-					
-					//responseStr에서 추출하고자 하는 item목록 추출
-					let items = data.response.body.items;
-					
-					//반복문을 이용하여 tr 만들어 추가하기 
-					for(let item of items){
-						let tr = $("<tr>");
-						tr.append($("<td>").text(item.clearVal),
-								$("<td>").text(item.sn),
-								$("<td>").text(item.districtName),
-								$("<td>").text(item.dataDate),
-								$("<td>").text(item.issueVal),
-								$("<td>").text(item.issueTime),
-								$("<td>").text(item.clearDate),
-								$("<td>").text(item.issueDate),
-								$("<td>").text(item.moveName),
-								$("<td>").text(item.clearTime),
-								$("<td>").text(item.issueGbn),
-								$("<td>").text(item.itemCode),
-								);
-						
-						//tr넣어주기
-						$("table tbody").append(tr);
+					if(!response.ok){
+						console.log(response.status);
+						return;
 					}
 					
-				},
-				error : function(){
-					console.log("통신오류");
+					const resultList = await response.json(); //JSONLIST 객체
+					
+					const htmlRows = resultList.map(data =>{
+						return "<tr>"
+  				        + "<td>" + (data.clearVal || '-') + "</td>"
+				        + "<td>" + (data.sn || '-') + "</td>"
+				        + "<td>" + (data.districtName || '-') + "</td>"
+				        + "<td>" + (data.dataDate || '-') + "</td>"
+				        + "<td>" + (data.issueVal || '-') + "</td>"
+				        + "<td>" + (data.issueTime || '-') + "</td>"
+				        + "<td>" + (data.clearDate || '-') + "</td>"
+				        + "<td>" + (data.issueDate || '-') + "</td>"
+				        + "<td>" + (data.moveName || '-') + "</td>"
+				        + "<td>" + (data.clearTime || '-') + "</td>"
+				        + "<td>" + (data.issueGbn || '-') + "</td>"
+				        + "<td>" + (data.itemCode || '-') + "</td>"
+				        + "</tr>";
+					}).join('');
+					
+					tableBody.innerHTML = htmlRows;
+					
+				} catch(error){
+					console.log(error)
 				}
+				
 			});
 		});
+
 	
 	</script>
 	<hr>
@@ -109,9 +114,6 @@
 		</tbody>
 	
 	</table>
-	
-	
-	
 	
 </body>
 </html>
